@@ -1,14 +1,14 @@
-import Square from "./Square";
+import BoardSquare from "./BoardSquare";
 import "./Board.css"
 
 function Board({ board, onSquareClick}){
     return(
         <div className="board">
-            {board.map((value, index) => (
+            {board.map((cell, index) => (
 
-                <Square 
+                <BoardSquare 
                 key={index}
-                value={value}
+                pieces={cell}
                 onClick={() => onSquareClick(index)}
                 />
             ))}
