@@ -1,27 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Board from "./components/Board";
 import { checkWinner } from "./utils/CheckWinner";
 import Pieces from "./components/Pieces";
 
+function Gobble() {
+  // === 初期駒設定 ===
+  const createPieces = (player) => [
+    { size: 1, player },
+    { size: 1, player },
+    { size: 2, player },
+    { size: 2, player },
+    { size: 3, player },
+    { size: 3, player },
+  ];
 
-function Gobble() { 
-  const initialBluePieces = [
-  { size: 1, player: "blue" },
-  { size: 1, player: "blue" },
-  { size: 2, player: "blue" },
-  { size: 2, player: "blue" },
-  { size: 3, player: "blue" },
-  { size: 3, player: "blue" },
-];
-  const initialRedPieces = [
-  { size: 1, player: "red" },
-  { size: 1, player: "red" },
-  { size: 2, player: "red" },
-  { size: 2, player: "red" },
-  { size: 3, player: "red" },
-  { size: 3, player: "red" },
-];
+  const initialBluePieces = createPieces("blue");
+  const initialRedPieces = createPieces("red");
 
+  // === 状態管理 ===
   const [board, setBoard] = useState(() => Array(9).fill(null).map(() => []));
   const [bluePieces, setBluePieces] = useState(initialBluePieces);
   const [redPieces, setRedPieces] = useState(initialRedPieces);
@@ -29,95 +25,102 @@ function Gobble() {
   const [result, setResult] = useState(null);
   const [selectedPiece, setSelectedPiece] = useState(null);
 
-  //add select piece
-  const handleSelectBoard = (index) => {
+  // === 共通: 現在のプレイヤー取得 ===
+  const currentPlayer = isTurn ? "blue" : "red";
 
-    const currentPlayer = isTurn ? "blue" : "red"
-    const topPiece = board[index]?.[0];
-    if (result) return;
-    //is topPiece
-    if (!topPiece) return;
-    //is topPiece player
-    if(topPiece.player != currentPlayer) return;
-    setSelectedPiece(topPiece);   
-  };
-
-
+  // === 駒選択関連 ===
   const handleSelectPiece = (piece) => {
-    const currentPlayer = isTurn ? "blue" : "red";
-    if (result) return;
-    if (piece.player !== currentPlayer) return;
+    if (result || piece.player !== currentPlayer) return;
     setSelectedPiece(piece);
   };
 
-  //remove select piece
-  const handleDeselect = () => {
-    setSelectedPiece(null);
-  };
-
-
-  const handlePlacePiece = (index) => {
+  const handleSelectBoard = (index) => {
+    if (result) return;
 
     const topPiece = board[index]?.[0];
-    if (result) return;
+    if (!topPiece || topPiece.player !== currentPlayer) return;
+
+    setSelectedPiece(topPiece);
+  };
+
+  const handleDeselect = () => setSelectedPiece(null);
+
+  // === 駒配置 ===
+  const handlePlacePiece = (index) => {
+    if (!selectedPiece || result) return;
+
+    const topPiece = board[index]?.[0];
     if (topPiece && topPiece.size >= selectedPiece.size) return;
+
     const newBoard = [...board];
-    
-    // 元のマスから駒を削除（ボード上の駒を移動する場合）
-    const oldIndex = newBoard.findIndex(cell => cell.includes(selectedPiece));
+
+    // 元の位置から削除（ボード上の駒を動かす場合）
+    const oldIndex = newBoard.findIndex((cell) => cell.includes(selectedPiece));
     if (oldIndex !== -1) {
-      newBoard[oldIndex] = newBoard[oldIndex].filter(p => p !== selectedPiece);
+      newBoard[oldIndex] = newBoard[oldIndex].filter((p) => p !== selectedPiece);
     }
-    
-    // 新しいマスに駒を追加（重ねる）
+
+    // 新しいマスへ配置（重ねる）
     newBoard[index] = [selectedPiece, ...newBoard[index]];
-    if (selectedPiece.player === "blue") {
-      setBluePieces(prev => prev.filter(p => p !== selectedPiece));
-    } else {
-      setRedPieces(prev => prev.filter(p => p !== selectedPiece));
-    }
     setBoard(newBoard);
+
+    // 手札から削除（手札→盤面への移動時のみ）
+    if (selectedPiece.player === "blue") {
+      setBluePieces((prev) => prev.filter((p) => p !== selectedPiece));
+    } else {
+      setRedPieces((prev) => prev.filter((p) => p !== selectedPiece));
+    }
+
     setSelectedPiece(null);
     setResult(checkWinner(newBoard));
     setIsTurn(!isTurn);
-
   };
 
+  // === リセット ===
   const handleReset = () => {
     setBoard(Array(9).fill(null).map(() => []));
+    setBluePieces(initialBluePieces);
+    setRedPieces(initialRedPieces);
     setIsTurn(true);
     setResult(null);
-    setRedPieces(initialRedPieces);
-    setBluePieces(initialBluePieces)
+    setSelectedPiece(null);
   };
 
-
+  // === UI ===
   return (
     <>
       <h1>○×ゲーム</h1>
-      <p>{isTurn ? "blue" : "red"}のターン</p>
-      <p>○ blueの手札</p>
-      <Pieces pieces={bluePieces} 
-        onSquareClick={handleSelectPiece} />
-      <p></p>
-      <Board board={board} 
+      <p>{currentPlayer}のターン</p>
+
+      <section>
+        <p>○ blueの手札</p>
+        <Pieces pieces={bluePieces} onSquareClick={handleSelectPiece} />
+      </section>
+
+      <Board
+        board={board}
         onSquareClick={
-          selectedPiece
-          ? handlePlacePiece   // 駒を選択中なら「置く」動作
-          : handleSelectBoard  // 駒未選択なら「選ぶ」動作
+          selectedPiece ? handlePlacePiece : handleSelectBoard
         }
-    />
-      <p>× redの手札</p>
-      <Pieces pieces={redPieces} onSquareClick={handleSelectPiece} />
+      />
+
+      <section>
+        <p>× redの手札</p>
+        <Pieces pieces={redPieces} onSquareClick={handleSelectPiece} />
+      </section>
+
       {selectedPiece && (
         <>
-        <p>{selectedPiece.size}を選択中</p>
-        <button onClick={handleDeselect}>選択解除</button>
+          <p>
+            {selectedPiece.player}の{selectedPiece.size}を選択中
+          </p>
+          <button onClick={handleDeselect}>選択解除</button>
         </>
       )}
+
       {result && (
         <>
-          <p>{result}の勝利</p>
+          <p>{result}の勝利！</p>
           <button onClick={handleReset}>リセット</button>
         </>
       )}
