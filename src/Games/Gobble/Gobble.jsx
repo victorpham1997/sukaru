@@ -94,7 +94,7 @@ function Gobble() {
 
       <section>
         <p>○ blueの手札</p>
-        <Pieces pieces={bluePieces} onSquareClick={handleSelectPiece} />
+        <Pieces pieces={bluePieces} onSquareClick={handleSelectPiece} selectedPiece={selectedPiece}/>
       </section>
 
       <Board
@@ -102,11 +102,12 @@ function Gobble() {
         onSquareClick={
           selectedPiece ? handlePlacePiece : handleSelectBoard
         }
+        selectedPiece={selectedPiece}
       />
 
       <section>
         <p>× redの手札</p>
-        <Pieces pieces={redPieces} onSquareClick={handleSelectPiece} />
+        <Pieces pieces={redPieces} onSquareClick={handleSelectPiece} selectedPiece={selectedPiece}/>
       </section>
 
       {selectedPiece && (

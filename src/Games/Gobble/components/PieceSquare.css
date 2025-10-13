@@ -1,0 +1,49 @@
+.piece-square {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #444;
+  border-radius: 10px;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px 2px gold; }
+  50% { box-shadow: 0 0 16px 6px gold; }
+}
+
+.piece-square.selected {
+  border-color: gold;
+  animation: glow 1s infinite ease-in-out;
+}
+
+.piece-square:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.piece-image {
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+/* 👇 サイズごとに大きさを調整 */
+.piece-image.size-1 {
+  width: 15px;
+  height: 15px;
+}
+
+.piece-image.size-2 {
+  width: 40px;
+  height: 40px;
+}
+
+.piece-image.size-3 {
+  width: 70px;
+  height: 70px;
+}

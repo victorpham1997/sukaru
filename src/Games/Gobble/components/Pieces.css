@@ -1,0 +1,9 @@
+.iece {
+  display: flex;               /* 横並び */
+  flex-direction: row;         /* 明示的に横方向 */
+  justify-content: center;     /* 中央寄せ（左右中央） */
+  align-items: center;         /* 上下中央揃え */
+  gap: 10px;                   /* 駒同士のすき間 */
+  padding: 10px;               /* 全体の余白 */
+  flex-wrap: wrap;             /* 画面が狭い場合に折り返す（可） */
+}

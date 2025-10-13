@@ -1,0 +1,50 @@
+.board-square {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #555;
+  border-radius: 10px;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px 2px gold; }
+  50% { box-shadow: 0 0 16px 6px gold; }
+}
+
+.board-square.selected {
+  border-color: gold;
+  animation: glow 1s infinite ease-in-out;
+}
+
+.board-square:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.board-piece-image {
+  object-fit: contain;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+/* サイズに応じてスケール */
+.board-piece-image.size-1 {
+  width: 15px;
+  height: 15px;
+}
+
+.board-piece-image.size-2 {
+  width: 40px;
+  height: 40px;
+}
+
+.board-piece-image.size-3 {
+  width: 70px;
+  height: 70px;
+}
